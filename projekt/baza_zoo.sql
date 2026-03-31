@@ -1,8 +1,8 @@
 --   BAZA DANYCH: ZOO
 
-DROP DATABASE IF EXISTS zoo;
-CREATE DATABASE zoo CHARACTER SET utf8mb4 COLLATE utf8mb4_polish_ci;
-USE zoo;
+DROP DATABASE IF EXISTS baza_zoo;
+CREATE DATABASE baza_zoo CHARACTER SET utf8mb4 COLLATE utf8mb4_polish_ci;
+USE baza_zoo;
 
 
 -- TABELA 1: gatunki
