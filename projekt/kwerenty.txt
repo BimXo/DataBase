@@ -1,0 +1,123 @@
+KWERENDA 1: Lista zwierząt z gatunkiem, klatką i strefą (JOIN)
+SELECT CONCAT(z.imie, ' (', g.nazwa_gatunku, ')') AS zwierze,
+       k.nazwa_klatki, s.nazwa_strefy, z.waga_kg, z.status
+FROM zwierzeta z
+JOIN gatunki g ON z.id_gatunku = g.id_gatunku
+JOIN klatki k ON z.id_klatki = k.id_klatki
+JOIN strefy s ON k.id_strefy = s.id_strefy
+ORDER BY s.nazwa_strefy, z.imie;
+
+
+KWERENDA 2: Łączne przychody z biletów wg rodzaju (GROUP BY + SUM)
+SELECT rb.nazwa_rodzaju,
+       COUNT(*) AS liczba_transakcji,
+       SUM(b.ilosc_biletow) AS sprzedane_bilety,
+       SUM(b.cena_laczna) AS przychod_total
+FROM bilety b
+JOIN rodzaje_biletow rb ON b.id_rodzaju = rb.id_rodzaju
+GROUP BY rb.id_rodzaju, rb.nazwa_rodzaju
+ORDER BY przychod_total DESC;
+
+
+KWERENDA 3: Ranking pracowników wg liczby wykonanych karmień (GROUP BY + COUNT + ORDER)
+SELECT CONCAT(p.imie, ' ', p.nazwisko) AS pracownik,
+       p.stanowisko,
+       COUNT(k.id_karmienia) AS liczba_karmien,
+       ROUND(SUM(k.ilosc_kg), 2) AS kg_lacznie
+FROM pracownicy p
+LEFT JOIN karmienie k ON p.id_pracownika = k.id_pracownika
+GROUP BY p.id_pracownika
+ORDER BY liczba_karmien DESC;
+
+
+KWERENDA 4: Zwierzęta wymagające wizyty weterynaryjnej (podzapytanie)
+SELECT CONCAT(z.imie, ' (', g.nazwa_gatunku, ')') AS zwierze,
+       MAX(ww.nastepna_wizyta) AS zaplanowana_wizyta
+FROM zwierzeta z
+JOIN gatunki g ON z.id_gatunku = g.id_gatunku
+JOIN wizyty_weterynaryjne ww ON z.id_zwierzecia = ww.id_zwierzecia
+WHERE ww.nastepna_wizyta <= DATE_ADD(CURDATE(), INTERVAL 30 DAY)
+GROUP BY z.id_zwierzecia
+ORDER BY zaplanowana_wizyta;
+
+
+KWERENDA 5: Dzienny przychód ze sprzedaży biletów (GROUP BY DATE)
+SELECT DATE(data_zakupu) AS dzien,
+       COUNT(*) AS transakcje,
+       SUM(ilosc_biletow) AS bilety,
+       SUM(cena_laczna) AS przychod
+FROM bilety
+GROUP BY DATE(data_zakupu)
+ORDER BY dzien;
+
+
+KWERENDA 6: Funkcja okna – ranking zwierząt wg wagi w obrębie gatunku
+SELECT z.imie, g.nazwa_gatunku, z.waga_kg,
+       RANK() OVER (PARTITION BY z.id_gatunku ORDER BY z.waga_kg DESC) AS rank_w_gatunku
+FROM zwierzeta z
+JOIN gatunki g ON z.id_gatunku = g.id_gatunku;
+
+
+KWERENDA 7: Najpopularniejsze atrakcje wg liczby rezerwacji
+SELECT a.nazwa_atrakcji,
+       COUNT(r.id_rezerwacji) AS rezerwacje,
+       SUM(r.ilosc_osob) AS uczestnicy_lacznie,
+       a.cena_za_osobe,
+       ROUND(SUM(r.ilosc_osob) * a.cena_za_osobe, 2) AS przychod_szacunkowy
+FROM atrakcje_dodatkowe a
+LEFT JOIN rezerwacje_atrakcji r ON a.id_atrakcji = r.id_atrakcji
+GROUP BY a.id_atrakcji
+ORDER BY rezerwacje DESC;
+
+
+KWERENDA 8: Zwierzęta, które nie były leczone w ciągu ostatnich 6 miesięcy (podzapytanie NOT IN)
+SELECT z.imie, g.nazwa_gatunku, z.data_przybycia
+FROM zwierzeta z
+JOIN gatunki g ON z.id_gatunku = g.id_gatunku
+WHERE z.id_zwierzecia NOT IN (
+    SELECT DISTINCT id_zwierzecia
+    FROM wizyty_weterynaryjne
+    WHERE data_wizyty >= DATE_SUB(CURDATE(), INTERVAL 6 MONTH)
+) AND z.status = 'aktywne';
+
+
+KWERENDA 9: Zmienna – łączna wartość sprzedanych biletów
+SET @total := (SELECT SUM(cena_laczna) FROM bilety);
+SELECT @total AS laczny_przychod_biletow,
+       COUNT(*) AS liczba_transakcji,
+       ROUND(@total / COUNT(*), 2) AS srednia_na_transakcje
+FROM bilety;
+
+
+KWERENDA 10: Hierarchia pracowników (self-join – szef i podwładni)
+SELECT CONCAT(s.imie,' ',s.nazwisko) AS szef,
+       s.stanowisko AS stanowisko_szefa,
+       CONCAT(p.imie,' ',p.nazwisko) AS pracownik,
+       p.stanowisko
+FROM pracownicy p
+LEFT JOIN pracownicy s ON p.szef_id = s.id_pracownika
+ORDER BY s.nazwisko, p.nazwisko;
+
+
+KWERENDA 11: Średnia waga zwierząt wg typu diety (GROUP BY + AVG)
+SELECT g.typ_diety,
+       COUNT(z.id_zwierzecia) AS liczba_zwierzat,
+       ROUND(AVG(z.waga_kg), 2) AS srednia_waga_kg,
+       ROUND(MAX(z.waga_kg), 2) AS max_waga_kg
+FROM zwierzeta z
+JOIN gatunki g ON z.id_gatunku = g.id_gatunku
+WHERE z.status = 'aktywne'
+GROUP BY g.typ_diety;
+
+
+KWERENDA 12: Zestawienie stref – ile zwierząt, ile klatek, przychód z biletów (JOIN wielu tabel)
+SELECT s.nazwa_strefy,
+       COUNT(DISTINCT k.id_klatki) AS liczba_klatek,
+       COUNT(DISTINCT z.id_zwierzecia) AS liczba_zwierzat,
+       COUNT(DISTINCT a.id_atrakcji) AS liczba_atrakcji
+FROM strefy s
+LEFT JOIN klatki k ON s.id_strefy = k.id_strefy
+LEFT JOIN zwierzeta z ON k.id_klatki = z.id_klatki AND z.status='aktywne'
+LEFT JOIN atrakcje_dodatkowe a ON s.id_strefy = a.id_strefy
+GROUP BY s.id_strefy
+ORDER BY liczba_zwierzat DESC;
