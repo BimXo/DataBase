@@ -54,7 +54,7 @@ CREATE TABLE pracownicy (
     stanowisko      ENUM('opiekun', 'weterynarz', 'przewodnik', 'kasjer', 'administrator', 'dyrektor') NOT NULL,
     telefon         VARCHAR(14),
     email           VARCHAR(60),
-    data_zatrudnienia DATE,
+    data_zatrudnienia DATE
 );
 
 
