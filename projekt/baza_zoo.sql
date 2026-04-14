@@ -12,16 +12,15 @@ CREATE TABLE gatunki (
     nazwa_gatunku   VARCHAR(80)  NOT NULL,
     nazwa_lacinska  VARCHAR(100),
     rodzina         VARCHAR(60),
-    typ_diety       ENUM('roslinozerca','miesnozerca','wszystkozerca') NOT NULL,
+    typ_diety       ENUM('roslinozerca', 'miesnozerca', 'wszystkozerca') NOT NULL,
     kraj_pochodzenia VARCHAR(60),
-    status_ochrony  ENUM('LC','NT','VU','EN','CR','EW','EX') DEFAULT 'LC'
+    status_ochrony  ENUM('LC', 'NT', 'VU', 'EN', 'CR', 'EW', 'EX') DEFAULT 'LC'
     -- LC=least concern, NT=near threatened, VU=vulnerable,
     -- EN=endangered, CR=critically endangered, EW=extinct in wild, EX=extinct
 );
 
 
 -- TABELA 2: strefy
-
 
 CREATE TABLE strefy (
     id_strefy   INT AUTO_INCREMENT PRIMARY KEY,
@@ -221,6 +220,7 @@ INSERT INTO gatunki (nazwa_gatunku, nazwa_lacinska, rodzina, typ_diety, kraj_poc
 ('Ryś eurazjatycki',     'Lynx lynx',               'Felidae',      'miesnozerca',   'Polska',         'LC'),
 ('Wilk szary',           'Canis lupus',             'Canidae',      'miesnozerca',   'Polska',         'LC');
 
+
 -- strefy 
 INSERT INTO strefy (nazwa_strefy, kontynent, opis) VALUES
 ('Sawanna Afrykańska',  'Afryka',     'Wybieg z roślinnością sabanową, lwy, żyrafy, zebry'),
@@ -231,6 +231,7 @@ INSERT INTO strefy (nazwa_strefy, kontynent, opis) VALUES
 ('Europa Leśna',        'Europa',     'Rysie, wilki, żbiki'),
 ('Terrarium',           'Różne',      'Gady i płazy z całego świata'),
 ('Oceanarium',          'Różne',      'Akwarium morskie, foki, ryby tropikalne');
+
 
 -- klatki 
 INSERT INTO klatki (nazwa_klatki, id_strefy, typ_klatki, powierzchnia_m2, max_pojemnosc) VALUES
@@ -255,6 +256,7 @@ INSERT INTO klatki (nazwa_klatki, id_strefy, typ_klatki, powierzchnia_m2, max_po
 ('Wybieg Rysi',            6, 'wybieg_zewnetrzny', 1600.00, 4),
 ('Wybieg Wilków',          6, 'wybieg_zewnetrzny', 2200.00, 10);
 
+
 -- pracownicy 
 INSERT INTO pracownicy (imie, nazwisko, stanowisko, telefon, email, data_zatrudnienia, szef_id) VALUES
 ('Marek',     'Zielinski',  'dyrektor',      '500-100-200', 'dyrektor@zoo.pl',          '2010-03-01', NULL),
@@ -272,6 +274,7 @@ INSERT INTO pracownicy (imie, nazwisko, stanowisko, telefon, email, data_zatrudn
 ('Rafał',     'Dąbrowski',  'kasjer',        '500-100-212', 'kas.dabrowski@zoo.pl',     '2021-06-01', 2),
 ('Monika',    'Kozłowska',  'opiekun',       '500-100-213', 'op.kozlowska@zoo.pl',      '2022-01-10', 2),
 ('Krzysztof', 'Jankowski',  'opiekun',       '500-100-214', 'op.jankowski@zoo.pl',      '2022-09-05', 2);
+
 
 -- zwierzeta 
 INSERT INTO zwierzeta (imie, id_gatunku, id_klatki, id_opiekuna, plec, data_urodzenia, data_przybycia, waga_kg, status) VALUES
@@ -311,6 +314,7 @@ INSERT INTO zwierzeta (imie, id_gatunku, id_klatki, id_opiekuna, plec, data_urod
 ('Alfa',      20, 20, 15,  'M', '2018-04-22', '2019-07-10', 55.00,  'aktywne'),
 ('Luna',      20, 20, 15,  'F', '2019-06-30', '2019-07-10', 48.00,  'aktywne');
 
+
 -- rodzaje_biletow 
 INSERT INTO rodzaje_biletow (nazwa_rodzaju, cena_bazowa, opis, wiek_min, wiek_max) VALUES
 ('Normalny',        35.00, 'Bilet normalny dla dorosłych',                       18, 64),
@@ -322,6 +326,7 @@ INSERT INTO rodzaje_biletow (nazwa_rodzaju, cena_bazowa, opis, wiek_min, wiek_ma
 ('Grupowy (min 15)',  20.00,'Bilet grupowy, min. 15 osób',                        0,120),
 ('Bezpłatny',         0.00,'Dzieci poniżej 3 lat wchodzą bezpłatnie',             0,  2),
 ('Karnet roczny',   180.00,'Nielimitowane wejścia przez 12 miesięcy',             0,120);
+
 
 -- bilety (70 rekordów) 
 INSERT INTO bilety (id_rodzaju, id_kasjera, data_zakupu, data_wizyty, ilosc_biletow, cena_laczna, metoda_platnosci) VALUES
@@ -396,6 +401,7 @@ INSERT INTO bilety (id_rodzaju, id_kasjera, data_zakupu, data_wizyty, ilosc_bile
 (2,12,'2024-06-16 10:30:00','2024-06-16',5, 100.00,'karta'),
 (6,13,'2024-06-17 09:00:00','2024-06-17',2, 260.00,'blik');
 
+
 -- atrakcje_dodatkowe
 INSERT INTO atrakcje_dodatkowe (nazwa_atrakcji, opis, cena_za_osobe, czas_trwania_min, max_uczestnikow, id_strefy, aktywna) VALUES
 ('Karmienie żyraf',          'Możliwość nakarmienia żyraf z platformy',           25.00, 20, 10, 1, 1),
@@ -408,6 +414,7 @@ INSERT INTO atrakcje_dodatkowe (nazwa_atrakcji, opis, cena_za_osobe, czas_trwani
 ('Karmienie pingwinów',      'Wspólne karmienie ryb przez opiekuna',             20.00, 20, 12, 4, 1),
 ('Lekcja zoologii',          'Edukacyjny wykład dla grup szkolnych',              8.00, 45, 30, 1, 1),
 ('Wycieczka terenowa 4x4',   'Jeep tour po terenie zoo',                         35.00, 50,  8, 1, 1);
+
 
 -- rezerwacje_atrakcji
 INSERT INTO rezerwacje_atrakcji (id_biletu, id_atrakcji, ilosc_osob, godzina_atrakcji) VALUES
@@ -441,6 +448,7 @@ INSERT INTO rezerwacje_atrakcji (id_biletu, id_atrakcji, ilosc_osob, godzina_atr
 (41,8, 2,'13:00:00'),
 (42,3, 4,'10:00:00'),
 (44,2, 2,'12:30:00');
+
 
 -- karmienie (60 rekordów) 
 INSERT INTO karmienie (id_zwierzecia, id_pracownika, data_karmienia, pora_dnia, rodzaj_pokarmu, ilosc_kg, uwagi) VALUES
@@ -505,6 +513,7 @@ INSERT INTO karmienie (id_zwierzecia, id_pracownika, data_karmienia, pora_dnia, 
 (23,14,'2024-06-02 12:00:00','poludnie','trawa',            20.000, NULL),
 (13, 9,'2024-06-02 12:00:00','poludnie','ryby',              3.000, NULL),
 (17, 9,'2024-06-02 12:00:00','poludnie','ryby',              2.000, NULL);
+
 
 -- wizyty_weterynaryjne (30 rekordów) 
 INSERT INTO wizyty_weterynaryjne (id_zwierzecia, id_weterynarza, data_wizyty, powod_wizyty, diagnoza, zalecenia, nastepna_wizyta) VALUES
