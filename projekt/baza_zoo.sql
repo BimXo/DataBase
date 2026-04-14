@@ -30,7 +30,7 @@ CREATE TABLE strefy (
 );
 
 
--- TABELA 3: klatki (wybiegi / woliery / akwaria)
+-- TABELA 3: klatki 
 
 CREATE TABLE klatki (
     id_klatki       INT AUTO_INCREMENT PRIMARY KEY,
@@ -90,8 +90,8 @@ CREATE TABLE rodzaje_biletow (
     nazwa_rodzaju   VARCHAR(60) NOT NULL,
     cena_bazowa     DECIMAL(8,2) NOT NULL,
     opis            VARCHAR(200),
-    wiek_min        INT DEFAULT 0,   -- minimalni wiek (lata)
-    wiek_max        INT DEFAULT 120  -- maksymalny wiek (lata)
+    wiek_min        INT DEFAULT 0,  
+    wiek_max        INT DEFAULT 120  
 );
 
 
@@ -132,7 +132,7 @@ CREATE TABLE atrakcje_dodatkowe (
 );
 
 
--- TABELA 9: rezerwacje_atrakcji  (łączy bilety z atrakcjami)
+-- TABELA 9: rezerwacje_atrakcji 
 
 CREATE TABLE rezerwacje_atrakcji (
     id_rezerwacji       INT AUTO_INCREMENT PRIMARY KEY,
