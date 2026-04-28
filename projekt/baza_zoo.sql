@@ -1,5 +1,3 @@
---   BAZA DANYCH: ZOO
-
 DROP DATABASE IF EXISTS baza_zoo;
 CREATE DATABASE baza_zoo CHARACTER SET utf8mb4 COLLATE utf8mb4_polish_ci;
 USE baza_zoo;
@@ -446,7 +444,7 @@ INSERT INTO rezerwacje_atrakcji (id_biletu, id_atrakcji, ilosc_osob, godzina_atr
 (44,2, 2,'12:30:00');
 
 
--- karmienie (60 rekordów) 
+-- karmienie  
 INSERT INTO karmienie (id_zwierzecia, id_pracownika, data_karmienia, pora_dnia, rodzaj_pokarmu, ilosc_kg, uwagi) VALUES
 (1,  5,'2024-06-01 07:00:00','rano',    'wołowina',          5.000, NULL),
 (2,  5,'2024-06-01 07:10:00','rano',    'wołowina',          4.000, NULL),
@@ -511,7 +509,7 @@ INSERT INTO karmienie (id_zwierzecia, id_pracownika, data_karmienia, pora_dnia, 
 (17, 9,'2024-06-02 12:00:00','poludnie','ryby',              2.000, NULL);
 
 
--- wizyty_weterynaryjne (30 rekordów) 
+-- wizyty_weterynaryjne  
 INSERT INTO wizyty_weterynaryjne (id_zwierzecia, id_pracownika, data_wizyty, powod_wizyty, diagnoza, zalecenia, nastepna_wizyta) VALUES
 (1,  3,'2024-01-10','Rutynowe badanie','Zdrowy, waga prawidłowa','Szczepienie booster za 6 miesięcy','2024-07-10'),
 (2,  3,'2024-01-10','Rutynowe badanie','Zdrowa','Kontynuacja diety','2024-07-10'),
