@@ -1,8 +1,8 @@
 --   BAZA DANYCH: ZOO
 
-DROP DATABASE IF EXISTS zoo;
-CREATE DATABASE zoo CHARACTER SET utf8mb4 COLLATE utf8mb4_polish_ci;
-USE zoo;
+DROP DATABASE IF EXISTS baza_zoo;
+CREATE DATABASE baza_zoo CHARACTER SET utf8mb4 COLLATE utf8mb4_polish_ci;
+USE baza_zoo;
 
 
 -- TABELA 1: gatunki
@@ -12,16 +12,15 @@ CREATE TABLE gatunki (
     nazwa_gatunku   VARCHAR(80)  NOT NULL,
     nazwa_lacinska  VARCHAR(100),
     rodzina         VARCHAR(60),
-    typ_diety       ENUM('roslinozerca','miesnozerca','wszystkozerca') NOT NULL,
+    typ_diety       ENUM('roslinozerca', 'miesnozerca', 'wszystkozerca') NOT NULL,
     kraj_pochodzenia VARCHAR(60),
-    status_ochrony  ENUM('LC','NT','VU','EN','CR','EW','EX') DEFAULT 'LC'
+    status_ochrony  ENUM('LC', 'NT', 'VU', 'EN', 'CR', 'EW', 'EX') DEFAULT 'LC'
     -- LC=least concern, NT=near threatened, VU=vulnerable,
     -- EN=endangered, CR=critically endangered, EW=extinct in wild, EX=extinct
 );
 
 
 -- TABELA 2: strefy
-
 
 CREATE TABLE strefy (
     id_strefy   INT AUTO_INCREMENT PRIMARY KEY,
@@ -31,13 +30,13 @@ CREATE TABLE strefy (
 );
 
 
--- TABELA 3: klatki (wybiegi / woliery / akwaria)
+-- TABELA 3: klatki 
 
 CREATE TABLE klatki (
     id_klatki       INT AUTO_INCREMENT PRIMARY KEY,
     nazwa_klatki    VARCHAR(80) NOT NULL,
     id_strefy       INT,
-    typ_klatki      ENUM('wybieg_zewnetrzny','woliera','akwarium','terrarium','wybieg_wewnetrzny') NOT NULL,
+    typ_klatki      ENUM('wybieg_zewnetrzny', 'woliera', 'akwarium', 'terrarium', 'wybieg_wewnetrzny') NOT NULL,
     powierzchnia_m2 DECIMAL(8,2),
     max_pojemnosc   INT,
     CONSTRAINT fk_klatki_strefy
@@ -52,14 +51,10 @@ CREATE TABLE pracownicy (
     id_pracownika   INT AUTO_INCREMENT PRIMARY KEY,
     imie            VARCHAR(45) NOT NULL,
     nazwisko        VARCHAR(45) NOT NULL,
-    stanowisko      ENUM('opiekun','weterynarz','przewodnik','kasjer','administrator','dyrektor') NOT NULL,
+    stanowisko      ENUM('opiekun', 'weterynarz', 'przewodnik', 'kasjer', 'administrator', 'dyrektor') NOT NULL,
     telefon         VARCHAR(14),
     email           VARCHAR(60),
-    data_zatrudnienia DATE,
-    szef_id         INT,
-    CONSTRAINT fk_pracownicy_szef
-        FOREIGN KEY (szef_id) REFERENCES pracownicy(id_pracownika)
-        ON DELETE SET NULL ON UPDATE CASCADE
+    data_zatrudnienia DATE
 );
 
 
@@ -70,20 +65,20 @@ CREATE TABLE zwierzeta (
     imie            VARCHAR(60),
     id_gatunku      INT NOT NULL,
     id_klatki       INT,
-    id_opiekuna     INT,
-    plec            ENUM('M','F','nieznana') DEFAULT 'nieznana',
+    id_pracownika   INT,
+    plec            ENUM('M', 'F', 'nieznana') DEFAULT 'nieznana',
     data_urodzenia  DATE,
     data_przybycia  DATE NOT NULL,
     waga_kg         DECIMAL(7,2),
-    status          ENUM('aktywne','przeniesione','wypozyczone','umarle') DEFAULT 'aktywne',
+    status          ENUM('aktywne', 'przeniesione', 'wypozyczone', 'umarle') DEFAULT 'aktywne',
     CONSTRAINT fk_zwierzeta_gatunek
         FOREIGN KEY (id_gatunku) REFERENCES gatunki(id_gatunku)
         ON DELETE RESTRICT ON UPDATE CASCADE,
     CONSTRAINT fk_zwierzeta_klatka
         FOREIGN KEY (id_klatki) REFERENCES klatki(id_klatki)
         ON DELETE SET NULL ON UPDATE CASCADE,
-    CONSTRAINT fk_zwierzeta_opiekun
-        FOREIGN KEY (id_opiekuna) REFERENCES pracownicy(id_pracownika)
+    CONSTRAINT fk_zwierzeta_pracownik
+        FOREIGN KEY (id_pracownika) REFERENCES pracownicy(id_pracownika)
         ON DELETE SET NULL ON UPDATE CASCADE
 );
 
@@ -95,8 +90,8 @@ CREATE TABLE rodzaje_biletow (
     nazwa_rodzaju   VARCHAR(60) NOT NULL,
     cena_bazowa     DECIMAL(8,2) NOT NULL,
     opis            VARCHAR(200),
-    wiek_min        INT DEFAULT 0,   -- minimalni wiek (lata)
-    wiek_max        INT DEFAULT 120  -- maksymalny wiek (lata)
+    wiek_min        INT DEFAULT 0,  
+    wiek_max        INT DEFAULT 120  
 );
 
 
@@ -105,12 +100,12 @@ CREATE TABLE rodzaje_biletow (
 CREATE TABLE bilety (
     id_biletu           INT AUTO_INCREMENT PRIMARY KEY,
     id_rodzaju          INT NOT NULL,
-    id_pracownika         INT,
+    id_pracownika       INT,
     data_zakupu         DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     data_wizyty         DATE NOT NULL,
     ilosc_biletow       INT NOT NULL DEFAULT 1,
     cena_laczna         DECIMAL(10,2) NOT NULL,
-    metoda_platnosci    ENUM('gotowka','karta','online','blik') DEFAULT 'gotowka',
+    metoda_platnosci    ENUM('gotowka', 'karta', 'online', 'blik', 'przelew') DEFAULT 'gotowka',
     CONSTRAINT fk_bilety_rodzaj
         FOREIGN KEY (id_rodzaju) REFERENCES rodzaje_biletow(id_rodzaju)
         ON DELETE RESTRICT ON UPDATE CASCADE,
@@ -137,7 +132,7 @@ CREATE TABLE atrakcje_dodatkowe (
 );
 
 
--- TABELA 9: rezerwacje_atrakcji  (łączy bilety z atrakcjami)
+-- TABELA 9: rezerwacje_atrakcji 
 
 CREATE TABLE rezerwacje_atrakcji (
     id_rezerwacji       INT AUTO_INCREMENT PRIMARY KEY,
@@ -161,7 +156,7 @@ CREATE TABLE karmienie (
     id_zwierzecia   INT NOT NULL,
     id_pracownika   INT NOT NULL,
     data_karmienia  DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    pora_dnia       ENUM('rano','poludnie','wieczor') NOT NULL,
+    pora_dnia       ENUM('rano', 'poludnie', 'wieczor') NOT NULL,
     rodzaj_pokarmu  VARCHAR(100) NOT NULL,
     ilosc_kg        DECIMAL(6,3) NOT NULL,
     uwagi           VARCHAR(200),
@@ -179,7 +174,7 @@ CREATE TABLE karmienie (
 CREATE TABLE wizyty_weterynaryjne (
     id_wizyty       INT AUTO_INCREMENT PRIMARY KEY,
     id_zwierzecia   INT NOT NULL,
-    id_weterynarza  INT NOT NULL,
+    id_pracownika   INT NOT NULL,
     data_wizyty     DATE NOT NULL,
     powod_wizyty    VARCHAR(200) NOT NULL,
     diagnoza        TEXT,
@@ -189,7 +184,7 @@ CREATE TABLE wizyty_weterynaryjne (
         FOREIGN KEY (id_zwierzecia) REFERENCES zwierzeta(id_zwierzecia)
         ON DELETE CASCADE ON UPDATE CASCADE,
     CONSTRAINT fk_wizyta_weterynarz
-        FOREIGN KEY (id_weterynarza) REFERENCES pracownicy(id_pracownika)
+        FOREIGN KEY (id_pracownika) REFERENCES pracownicy(id_pracownika)
         ON DELETE RESTRICT ON UPDATE CASCADE
 );
 
@@ -221,6 +216,7 @@ INSERT INTO gatunki (nazwa_gatunku, nazwa_lacinska, rodzina, typ_diety, kraj_poc
 ('Ryś eurazjatycki',     'Lynx lynx',               'Felidae',      'miesnozerca',   'Polska',         'LC'),
 ('Wilk szary',           'Canis lupus',             'Canidae',      'miesnozerca',   'Polska',         'LC');
 
+
 -- strefy 
 INSERT INTO strefy (nazwa_strefy, kontynent, opis) VALUES
 ('Sawanna Afrykańska',  'Afryka',     'Wybieg z roślinnością sabanową, lwy, żyrafy, zebry'),
@@ -231,6 +227,7 @@ INSERT INTO strefy (nazwa_strefy, kontynent, opis) VALUES
 ('Europa Leśna',        'Europa',     'Rysie, wilki, żbiki'),
 ('Terrarium',           'Różne',      'Gady i płazy z całego świata'),
 ('Oceanarium',          'Różne',      'Akwarium morskie, foki, ryby tropikalne');
+
 
 -- klatki 
 INSERT INTO klatki (nazwa_klatki, id_strefy, typ_klatki, powierzchnia_m2, max_pojemnosc) VALUES
@@ -255,26 +252,28 @@ INSERT INTO klatki (nazwa_klatki, id_strefy, typ_klatki, powierzchnia_m2, max_po
 ('Wybieg Rysi',            6, 'wybieg_zewnetrzny', 1600.00, 4),
 ('Wybieg Wilków',          6, 'wybieg_zewnetrzny', 2200.00, 10);
 
+
 -- pracownicy 
-INSERT INTO pracownicy (imie, nazwisko, stanowisko, telefon, email, data_zatrudnienia, szef_id) VALUES
-('Marek',     'Zielinski',  'dyrektor',      '500-100-200', 'dyrektor@zoo.pl',          '2010-03-01', NULL),
-('Anna',      'Kowalska',   'administrator', '500-100-201', 'admin@zoo.pl',             '2012-06-15', 1),
-('Piotr',     'Nowak',      'weterynarz',    '500-100-202', 'wet.nowak@zoo.pl',         '2015-09-01', 1),
-('Katarzyna', 'Wiśniewska', 'weterynarz',    '500-100-203', 'wet.wisniewska@zoo.pl',    '2018-01-10', 3),
-('Tomasz',    'Kowalczyk',  'opiekun',       '500-100-204', 'op.kowalczyk@zoo.pl',      '2016-04-20', 2),
-('Maria',     'Kamińska',   'opiekun',       '500-100-205', 'op.kaminska@zoo.pl',       '2017-07-05', 2),
-('Jakub',     'Lewandowski','opiekun',       '500-100-206', 'op.lewandowski@zoo.pl',    '2019-03-12', 2),
-('Aleksandra','Wojcik',     'opiekun',       '500-100-207', 'op.wojcik@zoo.pl',         '2020-08-01', 2),
-('Michał',    'Kaczmarek',  'opiekun',       '500-100-208', 'op.kaczmarek@zoo.pl',      '2021-01-15', 2),
-('Natalia',   'Zając',      'przewodnik',    '500-100-209', 'prz.zajac@zoo.pl',         '2018-06-01', 2),
-('Bartosz',   'Szymański',  'przewodnik',    '500-100-210', 'prz.szymanski@zoo.pl',     '2019-09-01', 2),
-('Ewa',       'Woźniak',    'kasjer',        '500-100-211', 'kas.wozniak@zoo.pl',       '2020-02-01', 2),
-('Rafał',     'Dąbrowski',  'kasjer',        '500-100-212', 'kas.dabrowski@zoo.pl',     '2021-06-01', 2),
-('Monika',    'Kozłowska',  'opiekun',       '500-100-213', 'op.kozlowska@zoo.pl',      '2022-01-10', 2),
-('Krzysztof', 'Jankowski',  'opiekun',       '500-100-214', 'op.jankowski@zoo.pl',      '2022-09-05', 2);
+INSERT INTO pracownicy (imie, nazwisko, stanowisko, telefon, email, data_zatrudnienia) VALUES
+('Marek',     'Zielinski',  'dyrektor',      '500-100-200', 'dyrektor@zoo.pl',          '2010-03-01'),
+('Anna',      'Kowalska',   'administrator', '500-100-201', 'admin@zoo.pl',             '2012-06-15'),
+('Piotr',     'Nowak',      'weterynarz',    '500-100-202', 'wet.nowak@zoo.pl',         '2015-09-01'),
+('Katarzyna', 'Wiśniewska', 'weterynarz',    '500-100-203', 'wet.wisniewska@zoo.pl',    '2018-01-10'),
+('Tomasz',    'Kowalczyk',  'opiekun',       '500-100-204', 'op.kowalczyk@zoo.pl',      '2016-04-20'),
+('Maria',     'Kamińska',   'opiekun',       '500-100-205', 'op.kaminska@zoo.pl',       '2017-07-05'),
+('Jakub',     'Lewandowski','opiekun',       '500-100-206', 'op.lewandowski@zoo.pl',    '2019-03-12'),
+('Aleksandra','Wojcik',     'opiekun',       '500-100-207', 'op.wojcik@zoo.pl',         '2020-08-01'),
+('Michał',    'Kaczmarek',  'opiekun',       '500-100-208', 'op.kaczmarek@zoo.pl',      '2021-01-15'),
+('Natalia',   'Zając',      'przewodnik',    '500-100-209', 'prz.zajac@zoo.pl',         '2018-06-01'),
+('Bartosz',   'Szymański',  'przewodnik',    '500-100-210', 'prz.szymanski@zoo.pl',     '2019-09-01'),
+('Ewa',       'Woźniak',    'kasjer',        '500-100-211', 'kas.wozniak@zoo.pl',       '2020-02-01'),
+('Rafał',     'Dąbrowski',  'kasjer',        '500-100-212', 'kas.dabrowski@zoo.pl',     '2021-06-01'),
+('Monika',    'Kozłowska',  'opiekun',       '500-100-213', 'op.kozlowska@zoo.pl',      '2022-01-10'),
+('Krzysztof', 'Jankowski',  'opiekun',       '500-100-214', 'op.jankowski@zoo.pl',      '2022-09-05');
+
 
 -- zwierzeta 
-INSERT INTO zwierzeta (imie, id_gatunku, id_klatki, id_opiekuna, plec, data_urodzenia, data_przybycia, waga_kg, status) VALUES
+INSERT INTO zwierzeta (imie, id_gatunku, id_klatki, id_pracownika, plec, data_urodzenia, data_przybycia, waga_kg, status) VALUES
 ('Simba',      1,  1,  5,  'M', '2018-05-12', '2019-03-01', 190.00, 'aktywne'),
 ('Nala',       1,  1,  5,  'F', '2019-08-20', '2020-01-15', 140.00, 'aktywne'),
 ('Tembo',      2,  2,  5,  'M', '2010-02-14', '2011-06-01', 5200.00,'aktywne'),
@@ -311,6 +310,7 @@ INSERT INTO zwierzeta (imie, id_gatunku, id_klatki, id_opiekuna, plec, data_urod
 ('Alfa',      20, 20, 15,  'M', '2018-04-22', '2019-07-10', 55.00,  'aktywne'),
 ('Luna',      20, 20, 15,  'F', '2019-06-30', '2019-07-10', 48.00,  'aktywne');
 
+
 -- rodzaje_biletow 
 INSERT INTO rodzaje_biletow (nazwa_rodzaju, cena_bazowa, opis, wiek_min, wiek_max) VALUES
 ('Normalny',        35.00, 'Bilet normalny dla dorosłych',                       18, 64),
@@ -323,8 +323,9 @@ INSERT INTO rodzaje_biletow (nazwa_rodzaju, cena_bazowa, opis, wiek_min, wiek_ma
 ('Bezpłatny',         0.00,'Dzieci poniżej 3 lat wchodzą bezpłatnie',             0,  2),
 ('Karnet roczny',   180.00,'Nielimitowane wejścia przez 12 miesięcy',             0,120);
 
+
 -- bilety (70 rekordów) 
-INSERT INTO bilety (id_rodzaju, id_kasjera, data_zakupu, data_wizyty, ilosc_biletow, cena_laczna, metoda_platnosci) VALUES
+INSERT INTO bilety (id_rodzaju, id_pracownika, data_zakupu, data_wizyty, ilosc_biletow, cena_laczna, metoda_platnosci) VALUES
 (1,12,'2024-06-01 09:10:00','2024-06-01',2,  70.00,'karta'),
 (2,12,'2024-06-01 09:15:00','2024-06-01',3,  60.00,'gotowka'),
 (5,13,'2024-06-01 09:20:00','2024-06-01',1, 110.00,'blik'),
@@ -396,6 +397,7 @@ INSERT INTO bilety (id_rodzaju, id_kasjera, data_zakupu, data_wizyty, ilosc_bile
 (2,12,'2024-06-16 10:30:00','2024-06-16',5, 100.00,'karta'),
 (6,13,'2024-06-17 09:00:00','2024-06-17',2, 260.00,'blik');
 
+
 -- atrakcje_dodatkowe
 INSERT INTO atrakcje_dodatkowe (nazwa_atrakcji, opis, cena_za_osobe, czas_trwania_min, max_uczestnikow, id_strefy, aktywna) VALUES
 ('Karmienie żyraf',          'Możliwość nakarmienia żyraf z platformy',           25.00, 20, 10, 1, 1),
@@ -408,6 +410,7 @@ INSERT INTO atrakcje_dodatkowe (nazwa_atrakcji, opis, cena_za_osobe, czas_trwani
 ('Karmienie pingwinów',      'Wspólne karmienie ryb przez opiekuna',             20.00, 20, 12, 4, 1),
 ('Lekcja zoologii',          'Edukacyjny wykład dla grup szkolnych',              8.00, 45, 30, 1, 1),
 ('Wycieczka terenowa 4x4',   'Jeep tour po terenie zoo',                         35.00, 50,  8, 1, 1);
+
 
 -- rezerwacje_atrakcji
 INSERT INTO rezerwacje_atrakcji (id_biletu, id_atrakcji, ilosc_osob, godzina_atrakcji) VALUES
@@ -441,6 +444,7 @@ INSERT INTO rezerwacje_atrakcji (id_biletu, id_atrakcji, ilosc_osob, godzina_atr
 (41,8, 2,'13:00:00'),
 (42,3, 4,'10:00:00'),
 (44,2, 2,'12:30:00');
+
 
 -- karmienie (60 rekordów) 
 INSERT INTO karmienie (id_zwierzecia, id_pracownika, data_karmienia, pora_dnia, rodzaj_pokarmu, ilosc_kg, uwagi) VALUES
@@ -506,8 +510,9 @@ INSERT INTO karmienie (id_zwierzecia, id_pracownika, data_karmienia, pora_dnia, 
 (13, 9,'2024-06-02 12:00:00','poludnie','ryby',              3.000, NULL),
 (17, 9,'2024-06-02 12:00:00','poludnie','ryby',              2.000, NULL);
 
+
 -- wizyty_weterynaryjne (30 rekordów) 
-INSERT INTO wizyty_weterynaryjne (id_zwierzecia, id_weterynarza, data_wizyty, powod_wizyty, diagnoza, zalecenia, nastepna_wizyta) VALUES
+INSERT INTO wizyty_weterynaryjne (id_zwierzecia, id_pracownika, data_wizyty, powod_wizyty, diagnoza, zalecenia, nastepna_wizyta) VALUES
 (1,  3,'2024-01-10','Rutynowe badanie','Zdrowy, waga prawidłowa','Szczepienie booster za 6 miesięcy','2024-07-10'),
 (2,  3,'2024-01-10','Rutynowe badanie','Zdrowa','Kontynuacja diety','2024-07-10'),
 (3,  4,'2024-01-15','Problemy z jelitami','Zaburzenia trawienne','Zmiana diety, probiotyki na 2 tygodnie','2024-02-15'),
