@@ -84,9 +84,9 @@ SELECT atrakcje_dodatkowe.id_atrakcji,
     COUNT(rezerwacje_atrakcji.id_rezerwacji) AS rezerwacje,
     SUM(rezerwacje_atrakcji.ilosc_osob) AS uczestnicy_lacznie,
     atrakcje_dodatkowe.cena_za_osobe,
-    ROUND(SUM(rezerwacje_atrakcji.ilosc_osob) * atrakcje_dodatkowe.cena_za_osobe, 2) AS przychod_szacunkowy
+    ROUND(SUM(rezerwacje_atrakcji.ilosc_osob) * atrakcje_dodatkowe.cena_za_osobe, 2) AS przychod
 FROM atrakcje_dodatkowe
-    LEFT JOIN rezerwacje_atrakcji ON atrakcje_dodatkowe.id_atrakcji = rezerwacje_atrakcji.id_atrakcji
+    JOIN rezerwacje_atrakcji ON atrakcje_dodatkowe.id_atrakcji = rezerwacje_atrakcji.id_atrakcji
 GROUP BY atrakcje_dodatkowe.id_atrakcji
 ORDER BY rezerwacje DESC;
 

@@ -18,45 +18,7 @@ CREATE TABLE gatunki (
 );
 
 
--- TABELA 2: strefy
-
-CREATE TABLE strefy (
-    id_strefy   INT AUTO_INCREMENT PRIMARY KEY,
-    nazwa_strefy VARCHAR(60) NOT NULL,
-    kontynent   VARCHAR(40),
-    opis        TEXT
-);
-
-
--- TABELA 3: klatki 
-
-CREATE TABLE klatki (
-    id_klatki       INT AUTO_INCREMENT PRIMARY KEY,
-    nazwa_klatki    VARCHAR(80) NOT NULL,
-    id_strefy       INT,
-    typ_klatki      ENUM('wybieg_zewnetrzny', 'woliera', 'akwarium', 'terrarium', 'wybieg_wewnetrzny') NOT NULL,
-    powierzchnia_m2 DECIMAL(8,2),
-    max_pojemnosc   INT,
-    CONSTRAINT fk_klatki_strefy
-        FOREIGN KEY (id_strefy) REFERENCES strefy(id_strefy)
-        ON DELETE SET NULL ON UPDATE CASCADE
-);
-
-
--- TABELA 4: pracownicy
-
-CREATE TABLE pracownicy (
-    id_pracownika   INT AUTO_INCREMENT PRIMARY KEY,
-    imie            VARCHAR(45) NOT NULL,
-    nazwisko        VARCHAR(45) NOT NULL,
-    stanowisko      ENUM('opiekun', 'weterynarz', 'przewodnik', 'kasjer', 'administrator', 'dyrektor') NOT NULL,
-    telefon         VARCHAR(14),
-    email           VARCHAR(60),
-    data_zatrudnienia DATE
-);
-
-
--- TABELA 5: zwierzeta
+-- TABELA 2: zwierzeta
 
 CREATE TABLE zwierzeta (
     id_zwierzecia   INT AUTO_INCREMENT PRIMARY KEY,
@@ -79,6 +41,46 @@ CREATE TABLE zwierzeta (
         FOREIGN KEY (id_pracownika) REFERENCES pracownicy(id_pracownika)
         ON DELETE SET NULL ON UPDATE CASCADE
 );
+
+
+-- TABELA 3: strefy
+
+CREATE TABLE strefy (
+    id_strefy   INT AUTO_INCREMENT PRIMARY KEY,
+    nazwa_strefy VARCHAR(60) NOT NULL,
+    kontynent   VARCHAR(40),
+    opis        TEXT
+);
+
+
+-- TABELA 4: klatki 
+
+CREATE TABLE klatki (
+    id_klatki       INT AUTO_INCREMENT PRIMARY KEY,
+    nazwa_klatki    VARCHAR(80) NOT NULL,
+    id_strefy       INT,
+    typ_klatki      ENUM('wybieg_zewnetrzny', 'woliera', 'akwarium', 'terrarium', 'wybieg_wewnetrzny') NOT NULL,
+    powierzchnia_m2 DECIMAL(8,2),
+    max_pojemnosc   INT,
+    CONSTRAINT fk_klatki_strefy
+        FOREIGN KEY (id_strefy) REFERENCES strefy(id_strefy)
+        ON DELETE SET NULL ON UPDATE CASCADE
+);
+
+
+-- TABELA 5: pracownicy
+
+CREATE TABLE pracownicy (
+    id_pracownika   INT AUTO_INCREMENT PRIMARY KEY,
+    imie            VARCHAR(45) NOT NULL,
+    nazwisko        VARCHAR(45) NOT NULL,
+    stanowisko      ENUM('opiekun', 'weterynarz', 'przewodnik', 'kasjer', 'administrator', 'dyrektor') NOT NULL,
+    telefon         VARCHAR(14),
+    email           VARCHAR(60),
+    data_zatrudnienia DATE
+);
+
+
 
 
 -- TABELA 6: rodzaje_biletow
